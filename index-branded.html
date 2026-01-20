@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Register – Louisiana Travel Association</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Purchase tickets, sponsorships, and add‑ons for LTA events via GlueUp." />
+  <meta name="theme-color" content="#147DB8" />
+  <style>
+    :root {
+      --brand-blue: #147DB8; /* Primary blue */
+      --brand-orange: #EC6B29; /* Primary orange */
+      --bg: #f8fafc;
+      --text: #1a1a1a;
+    }
+    html, body { margin:0; padding:0; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif; color:var(--text); background:var(--bg); line-height:1.55; }
+
+    /* Top bar */
+    .topbar { background: linear-gradient(90deg, var(--brand-blue), var(--brand-orange)); height: 6px; }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px; }
+
+    header.site { display:flex; align-items:center; gap:16px; padding:14px 0 4px; }
+    header.site img { height: 54px; width:auto; display:block; }
+
+    .hero { text-align:center; padding: 10px 0 8px; }
+    .hero h1 { margin: 8px 0 6px; font-size: clamp(24px, 4.8vw, 40px); color: var(--brand-blue); }
+    .hero p.lead { margin: 0 auto; max-width: 780px; color: #3f3f46; }
+
+    .grid { display:grid; grid-template-columns: 1.05fr 1fr; gap: 24px; margin-top: 16px; }
+    @media (max-width: 920px) { .grid { grid-template-columns: 1fr; } }
+
+    .card { background:#fff; border-radius: 14px; box-shadow: 0 10px 28px rgba(2,22,55,.08); padding: 18px; }
+
+    .pill { display:inline-block; background: rgba(20,125,184,.1); color: var(--brand-blue); padding: 6px 10px; border-radius: 999px; font-weight:600; font-size: 13px; letter-spacing:.2px; }
+
+    h2, h3 { color: var(--brand-orange); margin: 10px 0; }
+    ul.bullets { margin: 0; padding-left: 18px; }
+
+    .cta { display:inline-block; background: var(--brand-orange); color:#fff; text-decoration:none; padding: 12px 18px; border-radius: 10px; margin-top: 12px; font-weight: 700; }
+    .cta:hover { filter: brightness(0.95); }
+
+    .widget-shell { min-height: 720px; display:block; }
+    iframe.eb-widget { width:1px; min-width:100%; height:100%; border:0; background:transparent; }
+
+    footer { text-align:center; color:#666; padding: 40px 0 24px; font-size: 14px; }
+    footer a { color: var(--brand-blue); }
+  </style>
+
+  <!-- GlueUp widget script: include once per page -->
+  <script src="https://app.glueup.com/compiled/js/eb-widgets.min.js" type="text/javascript"></script>
+</head>
+<body>
+  <div class="topbar"></div>
+  <div class="wrap">
+    <header class="site">
+      <img src="Website-Header-2025-NEW-LTA-LOGO-horizontal_2.webp" alt="Louisiana Travel Association logo" />
+    </header>
+
+    <section class="hero">
+      <span class="pill">Official LTA Registration</span>
+      <h1>Join the Movement for Conservation in Virginia</h1>
+      <p class="lead">Select your ticket or sponsorship below and complete a secure checkout via GlueUp. Discount codes and add‑ons supported.</p>
+      <a class="cta" href="#register">Jump to Registration</a>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>What’s included</h2>
+        <ul class="bullets">
+          <li>Ticket options from General to Premier Sponsorships</li>
+          <li>Optional add‑ons during checkout</li>
+          <li>Instant confirmation email & tax‑ready receipts</li>
+        </ul>
+        <h3>Event details</h3>
+        <p><strong>Date range:</strong> Jan 6 – 24, 2026<br>
+           <strong>Location:</strong> Virginia</p>
+        <h3>Need help?</h3>
+        <p>Email <a href="mailto:info@yoursite.org">info@yoursite.org</a> and we’ll assist with invoices, changes, or refunds.</p>
+      </div>
+
+      <div class="card widget-shell" id="register" aria-label="Event registration">
+        <!-- GlueUp WIDGET START -->
+        <iframe
+          class="eb-widget"
+          id="eb-widget-event-registration"
+          name="eb-widget-event-registration"
+          data-auto-adjust-height="true"
+          data-auto-adjust-width="true"
+          src="https://glueupna.glueup.com/organization/4582/widget/event-registration/?eventID=88723">
+        </iframe>
+        <!-- GlueUp WIDGET END -->
+      </div>
+    </section>
+
+    <footer>
+      © Louisiana Travel Association • Questions? <a href="mailto:info@yoursite.org">info@yoursite.org</a>
+    </footer>
+  </div>
+</body>
+</html>
