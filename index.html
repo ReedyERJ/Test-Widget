@@ -295,109 +295,94 @@
           const cart = new Map();
 
           function renderCatalog() {
-            const q = searchEl.value.trim().toLowerCase();
-            const region = regionFilterEl.value;
+        // ...
+const card = document.createElement('div');
+card.className = 'card';
 
-            const byRegion = new Map();
-            for (const item of catalog) {
-              if (region && item.region !== region) continue;
-              if (q) {
-                const t = `${item.code} ${item.title}`.toLowerCase();
-                if (!t.includes(q)) continue;
-              }
-              if (!byRegion.has(item.region)) byRegion.set(item.region, []);
-              byRegion.get(item.region).push(item);
-            }
+const code = document.createElement('div');
+code.className = 'code';
+code.textContent = `#${it.code}`;
 
-            catalogEl.innerHTML = '';
-            for (const [reg, items] of byRegion) {
-              const h = document.createElement('h4');
-              h.className = 'region-title';
-              h.textContent = reg;
-              catalogEl.appendChild(h);
+const title = document.createElement('div');
+title.className = 'title';
+title.textContent = it.title;
 
-              for (const it of items) {
-                // If stockMap is null => unlimited. If code not in map => unlimited.
-                const hasManagedStock = stockMap instanceof Map && stockMap.has(it.code);
-                const stock = hasManagedStock ? stockMap.get(it.code) : null;
+const stockRow = document.createElement('div');
+stockRow.className = 'stock';
 
-                const card = document.createElement('div');
-                card.className = 'card';
+// ============= MIN 25 logic begins =============
+const MIN_QTY = 25;
 
-                const code = document.createElement('div');
-                code.className = 'code';
-                code.textContent = `#${it.code}`;
+// If stock is managed, we need to disable ordering when stock < MIN_QTY
+const notEnoughForMin = (hasManagedStock && (stock < MIN_QTY));
 
-                const title = document.createElement('div');
-                title.className = 'title';
-                title.textContent = it.title;
+if (hasManagedStock) {
+  if (notEnoughForMin) {
+    stockRow.innerHTML = `<span class="out">Temporarily unavailable (min ${MIN_QTY})</span>`;
+  } else {
+    // Show remaining stock; still allow adding with min 25
+    stockRow.innerHTML = `In stock: <strong>${stock}</strong>`;
+  }
+} else {
+  // Unlimited path; still require min 25
+  stockRow.textContent = 'Available';
+}
+// ============= MIN 25 logic ends =============
 
-                const stockRow = document.createElement('div');
-                stockRow.className = 'stock';
-                if (hasManagedStock) {
-                  stockRow.innerHTML = stock > 0 ? `In stock: <strong>${stock}</strong>` : `<span class="out">Out of stock</span>`;
-                } else {
-                  stockRow.textContent = 'Available';
-                }
+const qtyWrap = document.createElement('div');
+qtyWrap.className = 'qty';
+const input = document.createElement('input');
+input.type = 'number';
 
-                const qtyWrap = document.createElement('div');
-                qtyWrap.className = 'qty';
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.step = '1';
-                input.value = cart.get(it.code)?.qty ?? 0;
+// ============= MIN 25 logic begins =============
+input.min = String(MIN_QTY);                           // enforce min on the control
+input.step = '1';                                      // allow any integer >= 25
+// If the item is already in cart, keep that qty; else default to 25 to help the user
+input.value = cart.get(it.code)?.qty ?? MIN_QTY;
 
-                // Enforce stock only if managed
-                if (hasManagedStock) {
-                  if (stock > 0) input.max = String(stock);
-                  input.disabled = stock <= 0;
-                }
+// Respect stock ceilings when managed and enough for min
+if (hasManagedStock && !notEnoughForMin) {
+  input.max = String(stock);
+}
 
-                const addBtn = document.createElement('button');
-                addBtn.textContent = 'Add';
-                if (hasManagedStock) addBtn.disabled = stock <= 0;
+// Disable input if not enough stock to meet the minimum
+input.disabled = notEnoughForMin;
+// ============= MIN 25 logic ends =============
 
-                addBtn.addEventListener('click', () => {
-                  let qty = Math.max(0, parseInt(input.value || '0', 10));
-                  if (hasManagedStock) {
-                    if (qty > stock) qty = stock;
-                    input.value = qty;
-                  }
-                  if (qty > 0) cart.set(it.code, { item: it, qty, stock: hasManagedStock ? stock : null });
-                  else cart.delete(it.code);
-                  renderCart();
-                });
+const addBtn = document.createElement('button');
+addBtn.textContent = 'Add';
+// Disable the Add button if item is below min stock
+if (hasManagedStock) addBtn.disabled = notEnoughForMin;
 
-                qtyWrap.append('Qty:', input, addBtn);
-                card.append(code, title, stockRow, qtyWrap);
-                catalogEl.appendChild(card);
-              }
-            }
+addBtn.addEventListener('click', () => {
+  // Parse entered qty
+  let qty = Math.max(0, parseInt(input.value || '0', 10));
 
-            if (catalogEl.innerHTML.trim() === '') {
-              catalogEl.innerHTML = `<p class="muted">No brochures match your filters.</p>`;
-            }
-          }
+  // ============= MIN 25 logic begins =============
+  // Enforce minimum 25
+  if (qty > 0 && qty < MIN_QTY) qty = MIN_QTY;
 
-          function renderCart() {
-            cartItemsEl.innerHTML = '';
-            if (cart.size === 0) {
-              cartItemsEl.innerHTML = `<p class="muted">Your cart is empty.</p>`;
-              return;
-            }
-            for (const { item, qty } of cart.values()) {
-              const row = document.createElement('div');
-              row.className = 'cart-row';
-              const title = document.createElement('div');
-              title.textContent = `${item.title} (#${item.code})`;
-              const qtyEl = document.createElement('div');
-              qtyEl.textContent = `x${qty}`;
-              const rm = document.createElement('button');
-              rm.type = 'button';
-              rm.textContent = 'Remove';
-              rm.addEventListener('click', () => {
-                cart.delete(item.code);
+  // Enforce stock only if managed
+  if (hasManagedStock && !notEnoughForMin) {
+    if (qty > stock) qty = stock;
+  }
+
+  input.value = qty;
+  // If qty is still < 25 (e.g., user typed 0), don’t add it
+  if (qty < MIN_QTY) {
+    // Optional: give a gentle nudge
+    // alert(`Minimum order for each brochure is ${MIN_QTY}.`);
+    return;
+  }
+  // ============= MIN 25 logic ends =============
+
+  cart.set(it.code, { item: it, qty, stock: hasManagedStock ? stock : null });
+  renderCart();
+});
+// ...
+qtyWrap.append('Qty:', input, addBtn);
+card.append(code, title, stockRow, qtyWrap);
+catalogEl.appendChild(card);
                 renderCatalog();
                 renderCart();
               });
